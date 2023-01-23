@@ -1,4 +1,4 @@
-import requests, time
+import requests
 from project import db
 from project.models import Сalculations
 
@@ -28,15 +28,15 @@ def get_net_asset_value():
 
 
 def get_PnL():
-    net_assets = db.session.query(Сalculations.net_asset_value).order_by(Сalculations.id).all()
-    PnL = net_assets[-1][0] - net_assets[-2][0]
+    last_net_asset_value = db.session.query(Сalculations.net_asset_value).order_by(Сalculations.id.desc()).first()
+    PnL = get_net_asset_value() - last_net_asset_value[0]
     return PnL
 
 
 def get_Index_PnL():
-    net_assets = db.session.query(Сalculations.net_asset_value).order_by(Сalculations.id).all()
-    Index_PnL_list = db.session.query(Сalculations.Index_PnL).order_by(Сalculations.id).all()
-    Index_PnL = Index_PnL_list[-1][0] * net_assets[-1][0] / net_assets[-2][0]      
+    last_net_asset_value = db.session.query(Сalculations.net_asset_value).order_by(Сalculations.id.desc()).first()
+    last_Index_PnL = db.session.query(Сalculations.Index_PnL).order_by(Сalculations.id.desc()).first()
+    Index_PnL = last_Index_PnL[0] * get_net_asset_value() / last_net_asset_value[0]      
     return Index_PnL    
 
 
@@ -44,17 +44,15 @@ def add_in_database():
     records = db.session.query(Сalculations).all()
     PnL = 0
     Index_PnL = 1
-    while True():
-        if records:
-            PnL = get_PnL()
-            Index_PnL = get_Index_PnL()
-        record = Сalculations(dollar_to_bitcoin = get_dollar_to_bitcoin(),
-                              net_asset_value = get_net_asset_value(),
-                              PnL = PnL,
-                              Index_PnL = Index_PnL)
-        db.session.add(record)
-        db.session.commit()
-        time.sleep(10)    
+    if records:
+        PnL = get_PnL()
+        Index_PnL = get_Index_PnL()
+    record = Сalculations(dollar_to_bitcoin = get_dollar_to_bitcoin(),
+                          net_asset_value = get_net_asset_value(),
+                          PnL = PnL,
+                          Index_PnL = Index_PnL)
+    db.session.add(record)
+    db.session.commit()
         
         
 def get_PnL_all_period():
@@ -69,9 +67,8 @@ def get_PnL_percent_all_period():
     return PnL_percent_all_period
 
 
-def get_Index_PnL_all_period():
-    Index_PnL_list = db.session.query(Сalculations.Index_PnL).order_by(Сalculations.id).all()
-    Index_PnL_all_period = Index_PnL_list[-1]
+def get_Index_PnL_all_period(): 
+    Index_PnL_all_period = db.session.query(Сalculations.Index_PnL).order_by(Сalculations.id.desc()).first()
     return Index_PnL_all_period
 
 
