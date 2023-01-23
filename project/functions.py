@@ -26,22 +26,22 @@ def get_net_asset_value():
     net_asset_value = balance * get_dollar_to_bitcoin()
     return net_asset_value
 
-# первый день PnL = 0 и Index PnL = 1
+
 def get_PnL():
-    net_assets = db.session.query(Сalculations.net_asset_value).all()
-    PnL = net_assets[-1] - net_assets[-2]
+    net_assets = db.session.query(Сalculations.net_asset_value).order_by(Сalculations.id).all()
+    PnL = net_assets[-1][0] - net_assets[-2][0]
     return PnL
 
 
 def get_Index_PnL():
-    net_assets = db.session.query(Сalculations.net_asset_value).all()
-    Index_PnL_list = db.session.query(Сalculations.Index_PnL).all()
-    Index_PnL = Index_PnL_list[-1] * net_assets[-1] / net_assets[-2]      
+    net_assets = db.session.query(Сalculations.net_asset_value).order_by(Сalculations.id).all()
+    Index_PnL_list = db.session.query(Сalculations.Index_PnL).order_by(Сalculations.id).all()
+    Index_PnL = Index_PnL_list[-1][0] * net_assets[-1][0] / net_assets[-2][0]      
     return Index_PnL    
 
 
 def add_in_database():
-    records = Сalculations.query.all()
+    records = db.session.query(Сalculations).all()
     PnL = 0
     Index_PnL = 1
     while True():
@@ -55,3 +55,27 @@ def add_in_database():
         db.session.add(record)
         db.session.commit()
         time.sleep(10)    
+        
+        
+def get_PnL_all_period():
+    PnL_list = db.session.query(Сalculations.PnL).all()
+    PnL_all_period = sum([PnL[0] for PnL in PnL_list])
+    return PnL_all_period
+
+
+def get_PnL_percent_all_period():
+    Index_PnL_list = db.session.query(Сalculations.Index_PnL).order_by(Сalculations.id).all()
+    PnL_percent_all_period = ((Index_PnL_list[-1][0]/Index_PnL_list[0][0]) - 1) * 100
+    return PnL_percent_all_period
+
+
+def get_Index_PnL_all_period():
+    Index_PnL_list = db.session.query(Сalculations.Index_PnL).order_by(Сalculations.id).all()
+    Index_PnL_all_period = Index_PnL_list[-1]
+    return Index_PnL_all_period
+
+
+def get_all_period():
+    calculations_date_list = db.session.query(Сalculations.calculations_date).order_by(Сalculations.id).all()
+    all_period = f'{calculations_date_list[0][0]} - {calculations_date_list[-1][0]}'
+    return all_period         
