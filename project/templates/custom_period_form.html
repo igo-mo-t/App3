@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PnL</title>
+</head>
+<body>
+    <p>Loading PnL</p>
+    {% if PnL %}
+        <p>PnL(USD): {{ PnL }}</p>
+    {% endif %}
+    {% if PnL_percent %}
+        <p>PnL_%: {{ PnL_percent }}</p>
+    {% endif %}
+    {% if Index_PnL %}
+        <p>Index PnL: {{ Index_PnL }}</p>
+    {% endif %}
+    {% if Period %}
+        <p>Period(UTC): {{ Period }}</p>
+    {% endif %}
+
+    <form action="" method="post">
+        <p>
+    <label for="party">Enter the date and time of the start of calculations(UTC):</label>
+    <input id="party" type="datetime-local" name="datetime_1" />
+</p>
+
+    <form action="" method="post">
+        <p>
+    <label for="party">Enter the date and time of the end of the calculations(UTC):</label>
+    <input id="party" type="datetime-local" name="datetime_2" />
+</p>
+<p>
+    <input type="submit" value="Download">
+</p>
+    </form>
+
+</body>
+</html>
