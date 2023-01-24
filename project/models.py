@@ -10,6 +10,6 @@ class Сalculations(db.Model):
     Index_PnL = db.Column(db.Float())
     
    
-    # db.session.query(Сalculations.id, Сalculations.calculations_date).filter(Сalculations.calculations_date.between('2023-01-24 00:09:46.000000', '2023-01-24 00:12:46.000000')).all()
+    
     
    
